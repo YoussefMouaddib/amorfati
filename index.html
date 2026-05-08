@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMOR FATI — أمور فاطي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;700;800&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --crimson: #8b1a1a;
+      --gold: #c8a84b;
+      --cream: #e8dfc8;
+      --ink: #0d0905;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: url('background.png');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      filter: brightness(0.26) saturate(0.65);
+    }
+    .bg-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 20%, rgba(10,6,2,0.78) 100%);
+      pointer-events: none;
+    }
+    .bg-grain {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      pointer-events: none;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 60px 20px 80px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.2s forwards;
+    }
+
+    /* "— 2026 —" */
+    .year-label {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.55em;
+      color: var(--gold);
+      margin-bottom: 16px;
+      opacity: 0.6;
+      text-transform: uppercase;
+    }
+
+    /* "amor fati" — Figtree ExtraBold, lowercase, big */
+    .album-title-en {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 800;
+      font-size: clamp(36px, 8vw, 72px);
+      letter-spacing: -0.01em;
+      color: var(--cream);
+      line-height: 1;
+      text-transform: lowercase;
+    }
+
+    /* Arabic subtitle */
+    .album-title-ar {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: clamp(13px, 2.2vw, 18px);
+      color: var(--crimson);
+      direction: rtl;
+      margin-top: 10px;
+      letter-spacing: 0.12em;
+      opacity: 0.9;
+    }
+
+    .divider {
+      width: 140px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 20px auto 0;
+    }
+
+    /* ── ALBUM COVER ── */
+    .cover-wrap {
+      position: relative;
+      width: clamp(260px, 55vw, 420px);
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.5s forwards;
+    }
+    .cover-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border: 1px solid rgba(200,168,75,0.2);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .cover-img {
+      width: 100%;
+      display: block;
+      z-index: 1;
+      box-shadow:
+        0 0 0 1px rgba(200,168,75,0.12),
+        0 8px 40px rgba(0,0,0,0.85),
+        0 30px 80px rgba(0,0,0,0.5);
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    .cover-img:hover {
+      transform: scale(1.015);
+      box-shadow:
+        0 0 0 1px rgba(200,168,75,0.28),
+        0 12px 60px rgba(0,0,0,0.9),
+        0 40px 100px rgba(0,0,0,0.6);
+    }
+
+    /* ── TRACKLIST ── */
+    .tracklist-section {
+      width: 100%;
+      max-width: 560px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.8s forwards;
+    }
+
+    /* "TRACKLIST" label */
+    .tracklist-label {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 24px;
+      opacity: 0.5;
+    }
+
+    .tracklist {
+      list-style: none;
+      border-top: 1px solid rgba(200,168,75,0.1);
+    }
+
+    /* ── TRACK ROW ── */
+    .track-item { border-bottom: 1px solid rgba(200,168,75,0.07); }
+
+    .track-row {
+      display: flex;
+      align-items: center;
+      padding: 16px 6px 16px 0;
+      gap: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .track-row:hover { background: rgba(200,168,75,0.035); }
+    .track-row:hover .track-num { color: var(--crimson); }
+    .track-row:hover .track-title { color: #fff; }
+
+    .track-item.open .track-row { background: rgba(200,168,75,0.04); }
+    .track-item.open .track-num { color: var(--crimson); }
+    .track-item.open .track-title { color: #fff; }
+    .track-item.open .chevron { transform: rotate(180deg); color: var(--gold); }
+
+    /* "01" number */
+    .track-num {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      color: rgba(200,168,75,0.35);
+      min-width: 22px;
+      text-align: right;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .track-bar {
+      width: 1px;
+      height: 30px;
+      background: rgba(200,168,75,0.13);
+      flex-shrink: 0;
+    }
+
+    .track-info { flex: 1; }
+
+    /* "IHATEYALL" — bold, uppercase */
+    .track-title {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 700;
+      font-size: clamp(12px, 2.2vw, 15px);
+      letter-spacing: 0.1em;
+      color: var(--cream);
+      text-transform: uppercase;
+      transition: color 0.2s;
+      display: block;
+    }
+
+    /* "ft. Radmo" */
+    .track-feat {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      color: rgba(200,168,75,0.45);
+      margin-top: 3px;
+      display: block;
+      letter-spacing: 0.04em;
+    }
+
+    .track-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    /* "↗ listen" */
+    .listen-link {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      color: var(--gold);
+      text-decoration: none;
+      opacity: 0.5;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .listen-link:hover { opacity: 1; }
+
+    .chevron {
+      font-size: 10px;
+      color: rgba(200,168,75,0.38);
+      transition: transform 0.32s ease, color 0.2s;
+      line-height: 1;
+      font-family: sans-serif;
+    }
+
+    /* ── LYRICS PANEL ── */
+    .lyrics-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.52s cubic-bezier(0.4,0,0.2,1);
+    }
+    .track-item.open .lyrics-panel { max-height: 3000px; }
+
+    .lyrics-inner {
+      padding: 18px 8px 26px 42px;
+      border-left: 1px solid rgba(200,168,75,0.1);
+      margin: 0 6px 14px 38px;
+    }
+
+    /* lyrics — keep italic serif, distinct from everything else */
+    .lyrics-text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 15px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(232,223,200,0.62);
+      line-height: 2.1;
+      white-space: pre-line;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 64px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.1s forwards;
+    }
+    .footer-divider {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,168,75,0.28), transparent);
+      margin: 0 auto 20px;
+    }
+    .footer-text {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 300;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      color: rgba(200,168,75,0.28);
+      text-transform: uppercase;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* hide mobile-only link on desktop */
+    .listen-link-mobile { display: none; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .page { padding: 40px 16px 60px; }
+      .cover-wrap { width: 88vw; }
+      .tracklist-section { max-width: 100%; }
+      .lyrics-inner { margin-left: 20px; padding-left: 14px; }
+
+      /* hide the right-side listen link, show the one below the title */
+      .track-actions .listen-link { display: none; }
+      .listen-link-mobile {
+        display: inline-block;
+        font-family: 'Figtree', sans-serif;
+        font-weight: 300;
+        font-size: 10px;
+        color: var(--gold);
+        text-decoration: none;
+        opacity: 0.6;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-top: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg"></div>
+  <div class="bg-vignette"></div>
+  <div class="bg-grain"></div>
+
+  <div class="page">
+
+    <header>
+      <p class="year-label">— 2026 —</p>
+      <h1 class="album-title-en">amor fati</h1>
+      <p class="album-title-ar">أمور فاطي</p>
+      <div class="divider"></div>
+    </header>
+
+    <div class="cover-wrap">
+      <img class="cover-img" src="cover.png" alt="Amor Fati Album Cover" />
+    </div>
+
+    <section class="tracklist-section">
+      <p class="tracklist-label">— Tracklist —</p>
+      <ul class="tracklist">
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">01</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">IHATEYALL</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_1" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_1" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR IHATEYALL</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">02</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">REDREDRED</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_2" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_2" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR REDREDRED</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">03</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">AUTUMN STORY</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_3" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_3" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR AUTUMN STORY</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">04</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">TCH TCH</span>
+              <span class="track-feat">ft. Radmo</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_4" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_4" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR TCH TCH</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">05</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">PERSPECTIVEMAXXIN</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_5" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_5" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR PERSPECTIVEMAXXIN</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">06</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">ZEENA</span>
+              <span class="track-feat">ft. Salimwebz</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_6" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_6" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR ZEENA</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">07</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">MERCEDES</span>
+              <span class="track-feat">ft. Zebra, Chaos</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_7" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_7" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR MERCEDES</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">08</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">TX BLUES</span>
+              <span class="track-feat">outro</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_8" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_8" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR TX BLUES</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="track-item">
+          <div class="track-row" onclick="toggleLyrics(this)">
+            <span class="track-num">09</span>
+            <div class="track-bar"></div>
+            <div class="track-info">
+              <span class="track-title">ON ME</span>
+              <span class="track-feat">ft. Xcep — Deluxe</span>
+              <a class="listen-link-mobile" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_9" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+            </div>
+            <div class="track-actions">
+              <a class="listen-link" href="REPLACE_WITH_GOOGLE_DRIVE_LINK_9" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ listen</a>
+              <span class="chevron">▾</span>
+            </div>
+          </div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <p class="lyrics-text">REPLACE WITH LYRICS FOR ON ME</p>
+            </div>
+          </div>
+        </li>
+
+      </ul>
+    </section>
+
+    <div class="feedback-wrap">
+      <a class="feedback-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfPobn9HB8h39ui8MaI7ecuQWtZNezzqvHYRUFR51L8wYoHHQ/viewform" target="_blank" rel="noopener">
+        leave feedback
+      </a>
+    </div>
+
+    <footer>
+      <div class="footer-divider"></div>
+      <p class="footer-text">accepting fate — nothing more necessary</p>
+    </footer>
+
+  </div>
+
+  <script>
+    function toggleLyrics(row) {
+      const item = row.closest('.track-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.track-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+  </script>
+
+</body>
+</html>
